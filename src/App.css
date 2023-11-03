@@ -1,0 +1,29 @@
+.landing-page {
+  height: 500px;
+  text-align: center;
+  padding: 20%;
+}
+
+.landing-h1 {
+  font-weight: 700;
+}
+
+.home {
+  height: 500px;
+  text-align: center;
+  padding: 20%;
+}
+
+.home-h1{
+  font-weight: 700;
+  font-size: 3.5rem;
+}
+
+.donor-registration-h1{
+  font-weight: 700;
+}
+
+.donor-registration-h4{
+  color: red;
+  font-weight: 600;
+}
