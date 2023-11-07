@@ -1,29 +1,217 @@
+body {
+  padding: 0%;
+  margin: 0%;
+}
+
+.container {
+  padding: 0%;
+  margin: auto;
+}
+
 .landing-page {
-  height: 500px;
+  height: 70vh;
   text-align: center;
-  padding: 20%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.landing-div {
+  flex: 1;
 }
 
 .landing-h1 {
+  font-size: 4rem;
   font-weight: 700;
+}
+
+.landing-img {
+  padding: 5%;
+
+}
+
+.img {
+  width: 100%;
+  box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px;
 }
 
 .home {
+  text-align: left;
+  height: 88vh;
+  background-image: url("/public/home.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+  padding: 5%;
+}
+
+.home-main {
   height: 500px;
-  text-align: center;
-  padding: 20%;
+  display: flex;
+  background-image: url(/public/home.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+  padding: 5%;
+  margin: 0% 5%;
+  border-radius: 15px;
 }
 
-.home-h1{
+.home-container {
+  /* height: 100%; */
+  /* display: flex; */
+  flex: 1;
+}
+
+.home-img {
+  width: 100%;
+}
+
+.home-h1 {
   font-weight: 700;
-  font-size: 3.5rem;
+  font-size: 6rem;
+  color: #fff;
 }
 
-.donor-registration-h1{
+.home-btn {
+  text-align: left;
+}
+
+.donor-registration-h1 {
   font-weight: 700;
 }
 
-.donor-registration-h4{
+.donor-registration-h4 {
   color: red;
   font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  background: #353535;
+  color: #fff;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+
+
+/* Recipient Dashboard */
+.recipient-dashboard {
+  margin: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.spinner {
+  display: block;
+  margin: 0 auto;
+}
+
+.alert {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.alert.danger {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+
+.received-requests-title {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+.list-group {
+  list-style-type: none;
+  padding: 0;
+}
+
+.recipient-request {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.accept-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.no-request-message {
+  margin-top: 20px;
+  color: #777;
+}
+
+.alert.info {
+  background-color: #5bc0de;
+  color: #fff;
+}
+
+#matched-name {
+  font-weight: bold;
+  color: #333;
+}
+
+#matched-email {
+  font-style: italic;
+  color: #333;
+}
+
+
+
+/* Donor DashBoard */
+.donor-dashboard {
+  margin: 6%;
+  padding: 3% 5%;
+  background-color: #f5f5f5;
+}
+
+.available-recipients-title {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+.recipient-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recipient-table th,
+.recipient-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.matched-recipient-info {
+  background-color: #5bc0de;
+  color: #fff;
+}
+
+.send-request-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.fetching-error {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #ff6b6b;
+  color: #fff;
 }

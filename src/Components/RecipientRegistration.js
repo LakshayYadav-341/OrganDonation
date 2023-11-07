@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, Alert, Spinner, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const RecipientRegistration = ({ RecipientState }) => {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [organType, setOrganType] = useState('');
-  const [email, setEmail] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    organType: '',
+    email: '',
+  });
+
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleRegistration = async (event) => {
     event.preventDefault();
+
+    const { name, age, organType, email } = formData;
 
     if (!name || !age || !organType || !email) {
       setErrorMessage('All fields are required');
@@ -17,15 +31,34 @@ const RecipientRegistration = ({ RecipientState }) => {
     }
 
     const { Contract } = RecipientState;
-    let transaction;
+
     try {
-      transaction = await Contract.registerRecipient(name, age, organType, email);
-      if(transaction){
-        alert("Recipient Registered!");
-        window.location.replace('http://localhost:3000/');
+      setLoading(true);
+      await Contract.registerRecipient(name, age, organType, email);
+      const donorList = await Contract.findDonorsMatch(organType);
+
+      if (donorList) {
+        const response = await fetch('http://localhost:3001/send-mail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ donorList }),
+        });
+
+        if (response.ok) {
+          alert('Recipient Registered! Please wait till the transaction is confirmed.');
+          navigate('/home');
+        } else {
+          setErrorMessage('Failed to send data to the backend');
+        }
+      } else {
+        setErrorMessage('No donorList available. Cannot send email.');
       }
     } catch (e) {
-      alert(e.reason);
+      setErrorMessage(e.reason || 'An error occurred during registration');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,8 +72,9 @@ const RecipientRegistration = ({ RecipientState }) => {
             type="text"
             className="form-control"
             id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            name="name"
+            value={formData.name}
+            onChange={handleFieldChange}
             required
           />
         </div>
@@ -50,8 +84,9 @@ const RecipientRegistration = ({ RecipientState }) => {
             type="number"
             className="form-control"
             id="age"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
+            name="age"
+            value={formData.age}
+            onChange={handleFieldChange}
             required
           />
         </div>
@@ -61,18 +96,21 @@ const RecipientRegistration = ({ RecipientState }) => {
             type="email"
             className="form-control"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleFieldChange}
             required
           />
         </div>
         <div className="form-group mt-2">
-          <label htmlFor="organType">Organ Type:</label>
+          <Form.Label>Organ Type:</Form.Label>
           <Form.Select
             id="organType"
-            value={organType}
-            onChange={(e) => setOrganType(e.target.value)}
+            name="organType"
+            value={formData.organType}
+            onChange={handleFieldChange}
             required
+            as="select"
           >
             <option value="">Select an organ type</option>
             <option value="Heart">Heart</option>
@@ -92,10 +130,12 @@ const RecipientRegistration = ({ RecipientState }) => {
             <option value="Cartilage">Cartilage</option>
           </Form.Select>
         </div>
-        {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
-        <button type="button" className="btn btn-primary mt-2" onClick={handleRegistration}>
-          Register Recipient
-        </button>
+        <Alert variant="danger" show={errorMessage}>
+          {errorMessage}
+        </Alert>
+        <Button type="button" variant="primary" className="mt-2" onClick={handleRegistration}>
+          {loading ? <Spinner animation="border" size="sm" /> : 'Register Recipient'}
+        </Button>
       </form>
     </div>
   );

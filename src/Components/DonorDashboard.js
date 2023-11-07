@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import web3 from 'web3';
+import { useNavigate } from 'react-router-dom';
+import Table from 'react-bootstrap/Table';
 
 const DonorDashboard = ({ _Contract, Account }) => {
     const { Contract } = _Contract;
@@ -8,6 +10,8 @@ const DonorDashboard = ({ _Contract, Account }) => {
     const [donorObj, setDonorObj] = useState({});
     const [matched, setMatched] = useState(null);
     const [fetchingRecipientDetailsError, setFetchingRecipientDetailsError] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDonorDetails = async () => {
@@ -57,7 +61,9 @@ const DonorDashboard = ({ _Contract, Account }) => {
             }
         };
 
-        checkAvailableRecipients();
+        if (donorObj && donorObj.isAvailable) {
+            checkAvailableRecipients();
+        }
     }, [Contract, donorObj]);
 
     useEffect(() => {
@@ -86,9 +92,9 @@ const DonorDashboard = ({ _Contract, Account }) => {
     const sendRequest = async (recipient) => {
         try {
             const req = await Contract.sendRequest(recipient);
-            if(req){
-                alert("Request sent!");
-                window.location.replace('http://localhost:3000/');
+            if (req) {
+                alert("Request sent! Please wait till the transaction is confirmed.");
+                navigate('/home');
             }
         } catch (error) {
             console.error("Error sending match request:", error);
@@ -97,32 +103,46 @@ const DonorDashboard = ({ _Contract, Account }) => {
     };
 
     return (
-        <div className="container">
-            <h1 className="home-h1">Donor dashboard</h1>
-            {donorObj && donorObj.isAvailable && (<h2>Available Recipients:</h2>)}
-            <ul className="list-group">
-                {donorObj.isAvailable === false && matched && (
-                    <div className="alert alert-info">
-                        You are already matched to {matched.name}. The Email address of Recipient is {matched.email}
-                    </div>
-                )}
-                {donorObj.isAvailable && availableRecipients.map((recipient, index) => (
-                    <li key={index} className="list-group-item">
-                        {recipientDetails[recipient] && (
-                            <div>
-                                <h3>Recipient Details</h3>
-                                <p><strong>Name:</strong> {recipientDetails[recipient].name}</p>
-                                <p><strong>Organ Required:</strong> {recipientDetails[recipient].organType}</p>
-                            </div>
-                        )}
-                        {donorObj.isAvailable && (
-                            <button className="btn btn-primary" onClick={() => sendRequest(recipient)}>Send Match Request</button>
-                        )}
-                    </li>
-                ))}
-            </ul>
+        <div className="donor-dashboard">
+            <h1 className="donor-h1">Donor Dashboard</h1>
+            {donorObj.isAvailable && (
+                <>
+                    <h2 className="available-recipients-title">Available Recipients:</h2>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Organ Required</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {availableRecipients.map((recipient, index) => (
+                                <tr key={index}>
+                                    <td>{recipientDetails[recipient]?.name}</td>
+                                    <td>{recipientDetails[recipient]?.organType}</td>
+                                    <td>
+                                        <button
+                                            className="btn btn-primary send-request-button"
+                                            onClick={() => sendRequest(recipient)}
+                                        >
+                                            Send Match Request
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </>
+            )}
+            {!donorObj.isAvailable && matched && (
+                <div className="alert alert-info matched-recipient-info">
+                    You are already matched to <span id="matched-recipient-name">{matched.name}</span>.
+                    The Email address of Recipient is <span id="matched-recipient-email">{matched.email}</span>
+                </div>
+            )}
             {fetchingRecipientDetailsError && (
-                <div className="alert alert-danger">{fetchingRecipientDetailsError}</div>
+                <div className="alert alert-danger fetching-error">{fetchingRecipientDetailsError}</div>
             )}
         </div>
     );

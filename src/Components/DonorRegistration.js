@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, Alert, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const DonorRegistration = ({ DonationState }) => {
   const [name, setName] = useState('');
@@ -7,6 +8,9 @@ const DonorRegistration = ({ DonationState }) => {
   const [organType, setOrganType] = useState('');
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleRegistration = async (event) => {
     event.preventDefault();
@@ -17,15 +21,16 @@ const DonorRegistration = ({ DonationState }) => {
     }
 
     const { Contract } = DonationState;
-    let transaction;
     try {
-      transaction = await Contract.registerDonor(name, age, organType, email);
-      if(transaction){
-        alert("Donor Registered!");
-        window.location.replace('http://localhost:3000/');
-      }
+      setLoading(true);
+      await Contract.registerDonor(name, age, organType, email);
+      alert('Donor Registered! Please wait till the transaction is confirmed.');
+      
+      navigate('/home');
     } catch (e) {
-      alert(e.reason);
+      setErrorMessage(e.reason || 'An error occurred during registration');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,9 +98,11 @@ const DonorRegistration = ({ DonationState }) => {
             <option value="Cartilage">Cartilage</option>
           </Form.Select>
         </div>
-        {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
+        <Alert variant="danger" show={errorMessage}>
+          {errorMessage}
+        </Alert>
         <button type="button" className="btn btn-primary mt-2" onClick={handleRegistration}>
-          Register Donor
+          {loading ? <Spinner animation="border" size="sm" /> : 'Register Donor'}
         </button>
       </form>
     </div>
