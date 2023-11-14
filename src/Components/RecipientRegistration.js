@@ -47,7 +47,7 @@ const RecipientRegistration = ({ RecipientState }) => {
         });
 
         if (response.ok) {
-          alert('Recipient Registered! Please wait till the transaction is confirmed.');
+          alert('Recipient Registered! Please wait till the transaction is confirmed. Then click OK');
           navigate('/home');
         } else {
           setErrorMessage('Failed to send data to the backend');
@@ -56,6 +56,7 @@ const RecipientRegistration = ({ RecipientState }) => {
         setErrorMessage('No donorList available. Cannot send email.');
       }
     } catch (e) {
+      console.log(e);
       setErrorMessage(e.reason || 'An error occurred during registration');
     } finally {
       setLoading(false);

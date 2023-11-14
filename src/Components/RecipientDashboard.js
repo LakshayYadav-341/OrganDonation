@@ -43,7 +43,7 @@ const RecipientDashboard = ({ _Contract, Account }) => {
     const handleMatch = async (donor) => {
         try {
             await Contract.tryMatch(donor);
-            alert("Request accepted! Please wait till the transaction is confirmed.");
+            alert("Request accepted! Please wait till the transaction is confirmed. Then click OK");
             navigate('/home');
         } catch (error) {
             setError(error.reason || "An error occurred while accepting the request.");

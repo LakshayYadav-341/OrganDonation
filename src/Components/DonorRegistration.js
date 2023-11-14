@@ -24,7 +24,7 @@ const DonorRegistration = ({ DonationState }) => {
     try {
       setLoading(true);
       await Contract.registerDonor(name, age, organType, email);
-      alert('Donor Registered! Please wait till the transaction is confirmed.');
+      alert('Donor Registered! Please wait till the transaction is confirmed. Then click OK');
       
       navigate('/home');
     } catch (e) {

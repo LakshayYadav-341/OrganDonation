@@ -93,7 +93,7 @@ const DonorDashboard = ({ _Contract, Account }) => {
         try {
             const req = await Contract.sendRequest(recipient);
             if (req) {
-                alert("Request sent! Please wait till the transaction is confirmed.");
+                alert("Request sent! Please wait till the transaction is confirmed. Then click OK");
                 navigate('/home');
             }
         } catch (error) {
@@ -107,32 +107,36 @@ const DonorDashboard = ({ _Contract, Account }) => {
             <h1 className="donor-h1">Donor Dashboard</h1>
             {donorObj.isAvailable && (
                 <>
-                    <h2 className="available-recipients-title">Available Recipients:</h2>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Organ Required</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {availableRecipients.map((recipient, index) => (
-                                <tr key={index}>
-                                    <td>{recipientDetails[recipient]?.name}</td>
-                                    <td>{recipientDetails[recipient]?.organType}</td>
-                                    <td>
-                                        <button
-                                            className="btn btn-primary send-request-button"
-                                            onClick={() => sendRequest(recipient)}
-                                        >
-                                            Send Match Request
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                    {availableRecipients.length > 0? (
+                        <>
+                            <h2 className="available-recipients-title">Available Recipients:</h2>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Organ Required</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {availableRecipients.map((recipient, index) => (
+                                        <tr key={index}>
+                                            <td>{recipientDetails[recipient]?.name}</td>
+                                            <td>{recipientDetails[recipient]?.organType}</td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-primary send-request-button"
+                                                    onClick={() => sendRequest(recipient)}
+                                                >
+                                                    Send Match Request
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </>
+                    ):<h3 className="alert alert-info">No available Recipients!</h3>}
                 </>
             )}
             {!donorObj.isAvailable && matched && (
