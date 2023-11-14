@@ -2,6 +2,7 @@ import './App.css';
 
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 
 import OrganDonation from "./Contracts/OrganDonation.json";
@@ -24,6 +25,8 @@ function App() {
   });
   const [account, setAccount] = useState("None");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const connectWallet = async () => {
       try {
@@ -35,11 +38,11 @@ function App() {
           });
 
           window.ethereum.on("chainChanged", () => {
-            window.location.reload();
+            navigate('/');
           });
 
           window.ethereum.on("accountsChanged", () => {
-            window.location.reload();
+            navigate('/');
           });
 
           const provider = new ethers.providers.Web3Provider(ethereum);
