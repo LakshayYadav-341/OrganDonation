@@ -35,8 +35,8 @@ const DonorRegistration = ({ DonationState }) => {
   };
 
   return (
-    <div className="container">
-      <h4 className='alert alert-danger mt-4 donor-registration-h4'>Your are not a registered Donor. Please register first.</h4>
+    <div className="container mt-4">
+      
       <h1 className="donor-registration-h1">Donor Registration</h1>
       <form>
         <div className="form-group">

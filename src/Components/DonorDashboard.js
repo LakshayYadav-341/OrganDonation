@@ -5,10 +5,10 @@ import Table from 'react-bootstrap/Table';
 
 const DonorDashboard = ({ _Contract, Account }) => {
     const { Contract } = _Contract;
-    const [availableRecipients, setAvailableRecipients] = useState([]);
-    const [recipientDetails, setRecipientDetails] = useState({});
     const [donorObj, setDonorObj] = useState({});
     const [matched, setMatched] = useState(null);
+    const [availableRecipients, setAvailableRecipients] = useState([]);
+    const [recipientDetails, setRecipientDetails] = useState({});
     const [fetchingRecipientDetailsError, setFetchingRecipientDetailsError] = useState(null);
 
     const navigate = useNavigate();
@@ -32,9 +32,11 @@ const DonorDashboard = ({ _Contract, Account }) => {
 
     useEffect(() => {
         const findMatchedRecipient = async () => {
-            if (donorObj && !donorObj.isAvailable && web3.utils.isAddress(donorObj.matchedAddress)) {
+            if (donorObj && !donorObj.isAvailable && web3.utils.isAddress(donorObj.matchedAddress[0])) {
+                const arr = donorObj.matchedAddress;
+                const _matchedAddress = arr[arr.length - 1];
                 try {
-                    const details = await Contract.getRecipientDetails(donorObj.matchedAddress);
+                    const details = await Contract.getRecipientDetails(_matchedAddress);
                     setMatched(details);
                 } catch (error) {
                     console.error("Error fetching matched recipient details:", error);
@@ -93,12 +95,12 @@ const DonorDashboard = ({ _Contract, Account }) => {
         try {
             const req = await Contract.sendRequest(recipient);
             if (req) {
-                alert("Request sent! Please wait till the transaction is confirmed. Then click OK");
+                alert("Request sent! Please wait until the transaction is confirmed. Then click OK");
                 navigate('/home');
             }
         } catch (error) {
             console.error("Error sending match request:", error);
-            alert(error.reason);
+            alert(error.reason || "An error occurred while sending the match request.");
         }
     };
 
@@ -107,7 +109,7 @@ const DonorDashboard = ({ _Contract, Account }) => {
             <h1 className="donor-h1">Donor Dashboard</h1>
             {donorObj.isAvailable && (
                 <>
-                    {availableRecipients.length > 0? (
+                    {availableRecipients.length > 0 ? (
                         <>
                             <h2 className="available-recipients-title">Available Recipients:</h2>
                             <Table striped bordered hover>
@@ -136,13 +138,16 @@ const DonorDashboard = ({ _Contract, Account }) => {
                                 </tbody>
                             </Table>
                         </>
-                    ):<h3 className="alert alert-info">No available Recipients!</h3>}
+                    ) : (
+                        <h3 className="alert alert-info">No available Recipients!</h3>
+                    )}
                 </>
             )}
             {!donorObj.isAvailable && matched && (
                 <div className="alert alert-info matched-recipient-info">
                     You are already matched to <span id="matched-recipient-name">{matched.name}</span>.
                     The Email address of Recipient is <span id="matched-recipient-email">{matched.email}</span>
+                    <p>Do you want to get a new organ? <button className="btn btn-success btn-sm" onClick={() => navigate('/donor-registration')}>new organ registration</button></p>
                 </div>
             )}
             {fetchingRecipientDetailsError && (

@@ -5,8 +5,8 @@ import { Spinner, Alert } from "react-bootstrap";
 const RecipientDashboard = ({ _Contract, Account }) => {
     const { Contract } = _Contract;
     const [recipientDetails, setRecipientDetails] = useState(null);
-    const [donorObj, setDonorObj] = useState({});
-    const [matched, setMatched] = useState(null);
+    const [donorDetails, setDonorDetails] = useState({});
+    const [matchedDonor, setMatchedDonor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -19,15 +19,16 @@ const RecipientDashboard = ({ _Contract, Account }) => {
                 setRecipientDetails(recipientInfo);
 
                 if (recipientInfo.isAvailable) {
-                    const details = {};
+                    const donorDetailsMap = {};
                     for (const donorAddress of recipientInfo.requests) {
                         const donorDetails = await Contract.getDonorDetails(donorAddress);
-                        details[donorAddress] = donorDetails;
+                        donorDetailsMap[donorAddress] = donorDetails;
                     }
-                    setDonorObj(details);
+                    setDonorDetails(donorDetailsMap);
                 } else {
-                    const details = await Contract.getDonorDetails(recipientInfo.matchAddress);
-                    setMatched(details);
+                    const matchedDonorAddress = recipientInfo.matchAddress[recipientInfo.matchAddress.length - 1];
+                    const details = await Contract.getDonorDetails(matchedDonorAddress);
+                    setMatchedDonor(details);
                 }
 
                 setLoading(false);
@@ -43,7 +44,7 @@ const RecipientDashboard = ({ _Contract, Account }) => {
     const handleMatch = async (donor) => {
         try {
             await Contract.tryMatch(donor);
-            alert("Request accepted! Please wait till the transaction is confirmed. Then click OK");
+            alert("Request accepted! Please wait until the transaction is confirmed. Then click OK");
             navigate('/home');
         } catch (error) {
             setError(error.reason || "An error occurred while accepting the request.");
@@ -68,12 +69,12 @@ const RecipientDashboard = ({ _Contract, Account }) => {
                                     <ul className="list-group">
                                         {recipientDetails.requests.map((donor, index) => (
                                             <li key={index} className="list-group-item recipient-request">
-                                                {donorObj[donor] && (
+                                                {donorDetails[donor] && (
                                                     <>
                                                         <h3>Donor Details</h3>
-                                                        <p><strong>Name:</strong> {donorObj[donor].name}</p>
-                                                        <p><strong>Email:</strong> {donorObj[donor].email}</p>
-                                                        <p><strong>Organ Donated:</strong> {donorObj[donor].organType}</p>
+                                                        <p><strong>Name:</strong> {donorDetails[donor].name}</p>
+                                                        <p><strong>Email:</strong> {donorDetails[donor].email}</p>
+                                                        <p><strong>Organ Donated:</strong> {donorDetails[donor].organType}</p>
                                                     </>
                                                 )}
                                                 <button className="btn btn-primary accept-button" onClick={() => handleMatch(donor)}>Accept</button>
@@ -87,13 +88,13 @@ const RecipientDashboard = ({ _Contract, Account }) => {
                         </>
                     ) : (
                         <div className="alert info">
-                            You are already matched to <span id="matched-name">{matched?.name}</span>. The Email address of Donor is <span id="matched-email">{matched?.email}</span>
+                            You are already matched to <span id="matched-name">{matchedDonor?.name}</span>. The Email address of Donor is <span id="matched-email">{matchedDonor?.email}</span><br/><br/>
+                            <p>Do you want to get a new organ? <button className="btn btn-success btn-sm" onClick={() => navigate('/recipient-registration')}>new organ registration</button></p>
                         </div>
                     )}
                 </>
             )}
         </div>
-
     );
 };
 
